@@ -1,0 +1,12 @@
+﻿name: Build & Test
+
+on: push
+
+jobs:
+  build:
+    name: Build 📦
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Print
+      run: echo 'Hello World'

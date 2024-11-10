@@ -42,13 +42,13 @@ namespace MoviesProject.Test.Integration
             },
             new Movie()
             {
-                Title = "My Testing Movie 2",
+                Title = "My Testing Movie Sequel",
                 Overview = "Great movie!",
                 OriginalLanguage = "en",
                 Popularity = 1423.13,
                 VoteCount = 1482_2313,
                 VoteAverage = 9.99,
-                ReleaseDate = new DateTime(2024, 12, 31),
+                ReleaseDate = new DateTime(1992, 12, 31),
                 PosterUrl = "http:\\\\poster-url.org",
                 Genres = [new() { Name = "Fantasy" }]
             });

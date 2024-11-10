@@ -15,7 +15,6 @@ namespace MoviesProject.Infrastructure.Exceptions
 			{
                 Error error = e switch
                 {
-                    ArgumentException => new(HttpStatusCode.NotFound, e.GetType().Name, e.Message),
                     _ => new(HttpStatusCode.InternalServerError, e.GetType().Name, e.Message),
                 };
                 context.Response.StatusCode = (int)error.StatusCode;

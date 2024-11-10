@@ -39,12 +39,12 @@ public class MovieControllerTest
         Assert.Equal("Action", movie.Genres.First().Name);
 
         movie = content.Last();
-        Assert.Equal("My Testing Movie 2", movie.Title);
+        Assert.Equal("My Testing Movie Sequel", movie.Title);
         Assert.Equal("Great movie!", movie.Overview);
         Assert.Equal("en", movie.OriginalLanguage);
         Assert.Equal(1423.13, movie.Popularity);
         Assert.Equal("http:\\\\poster-url.org", movie.PosterUrl);
-        Assert.Equal(new DateTime(2024, 12, 31), movie.ReleaseDate);
+        Assert.Equal(new DateTime(1992, 12, 31), movie.ReleaseDate);
         Assert.Equal(9.99, movie.VoteAverage);
         Assert.Equal(1482_2313, movie.VoteCount);
 
@@ -92,7 +92,6 @@ public class MovieControllerTest
     {
         var response = await _client.GetAsync("/movie?movieTitle=My&limit=0");
 
-        Assert.True(!response.IsSuccessStatusCode);
         Assert.True(response.StatusCode == System.Net.HttpStatusCode.InternalServerError);
     }
 

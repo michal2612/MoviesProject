@@ -27,7 +27,7 @@ http://localhost:5050/swagger/index.html
 
 ### Locally
 
-Requirments:
+Requirements:
 - `dotnet` https://dotnet.microsoft.com/en-us/download 
 - `dotnet ef` https://learn.microsoft.com/en-us/ef/core/cli/dotnet#installing-the-tools
 

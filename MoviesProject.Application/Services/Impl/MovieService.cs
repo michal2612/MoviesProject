@@ -33,7 +33,7 @@ public sealed class MovieService : IMovieService
             query = query.Where(m => m.Genres.Any(g => g.Name == genre));
         }
 
-        query = query.Skip((pageOffset - 1) * pageOffset).Take(limit);
+        query = query.Skip((pageOffset - 1) * limit).Take(limit);
 
         if (sortingMethod != SortingMethod.None)
         {

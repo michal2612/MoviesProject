@@ -16,7 +16,7 @@ public class MovieControllerTest
     [Fact]
     public async Task MoviesCanBeQueried()
     {
-        var response = await _client.GetAsync("/movie?movieTitle=My");
+        var response = await _client.GetAsync("/movie?movieTitle=My&limit=2");
 
         Assert.True(response.IsSuccessStatusCode);
         Assert.True(response.StatusCode == System.Net.HttpStatusCode.OK);
@@ -67,6 +67,36 @@ public class MovieControllerTest
 
         var movie = content.First();
         Assert.True(movie.Genres.First().Name == "Action");
+    }
+
+    [Fact]
+    public async Task LimitingAndPagingIsWorking()
+    {
+        var response = await _client.GetAsync("/movie?movieTitle=My&limit=1&pageOffset=1");
+
+        Assert.True(response.IsSuccessStatusCode);
+        Assert.True(response.StatusCode == System.Net.HttpStatusCode.OK);
+
+        var content = await response.Content.ReadFromJsonAsync<IEnumerable<MovieDto>>();
+        Assert.NotNull(content);
+        Assert.Single(content);
+
+        var movie = content.First();
+        Assert.True(movie.Title == "My Testing Movie");
+
+        response = await _client.GetAsync("/movie?movieTitle=My&limit=1&pageOffset=2");
+        content = await response.Content.ReadFromJsonAsync<IEnumerable<MovieDto>>();
+        Assert.NotNull(content);
+
+        movie = content.First();
+        Assert.True(movie.Title == "My Testing Movie Sequel");
+
+        response = await _client.GetAsync("/movie?movieTitle=My&limit=1&pageOffset=3");
+        content = await response.Content.ReadFromJsonAsync<IEnumerable<MovieDto>>();
+        Assert.NotNull(content);
+
+        movie = content.First();
+        Assert.True(movie.Title == "My Testing Movie 3");
     }
 
     [Fact]

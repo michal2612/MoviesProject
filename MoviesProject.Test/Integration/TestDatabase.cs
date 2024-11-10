@@ -51,7 +51,9 @@ namespace MoviesProject.Test.Integration
                 ReleaseDate = new DateTime(1992, 12, 31),
                 PosterUrl = "http:\\\\poster-url.org",
                 Genres = [new() { Name = "Fantasy" }]
-            });
+            },
+            GenerateDummyMovie("My Testing Movie 3"),
+            GenerateDummyMovie("My Testing Movie 4"));
             Context.SaveChanges();
         }
 
@@ -60,5 +62,19 @@ namespace MoviesProject.Test.Integration
             Context.Dispose();
             _connection.Close();
         }
+
+        private Movie GenerateDummyMovie(string title) =>
+            new()
+            {
+                Title = title,
+                Overview = "Great movie!",
+                OriginalLanguage = "en",
+                Popularity = 1423.13,
+                VoteCount = 1482_2313,
+                VoteAverage = 9.99,
+                ReleaseDate = new DateTime(1992, 12, 31),
+                PosterUrl = "http:\\\\poster-url.org",
+                Genres = [new() { Name = "Fantasy" }]
+            };
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace MoviesProject.Application.DTO
+﻿namespace MoviesProject.Application.DTO;
+
+public class GenreDto
 {
-    public class GenreDto
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }

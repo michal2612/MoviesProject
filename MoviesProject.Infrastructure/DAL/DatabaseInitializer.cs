@@ -20,7 +20,7 @@ internal sealed class DatabaseInitializer : IHostedService
             double Popularity, long Vote_Count, double Vote_Average,
             string Original_Language, string Genre, string Poster_Url);
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken _)
     {
         using var scope = _serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<MovieDbContext>();
@@ -34,6 +34,7 @@ internal sealed class DatabaseInitializer : IHostedService
         csv.Read();
         csv.ReadHeader();
 
+        // there are about 10_000 entries in .csv file. Add records in batches.
         var batchSize = 500;
         var movies = new List<Movie>();
         var existingGenres = await dbContext.Genres.ToDictionaryAsync(g => g.Name.ToLower());
@@ -80,8 +81,8 @@ internal sealed class DatabaseInitializer : IHostedService
 
                 if (movies.Count == batchSize)
                 {
-                    await dbContext.Movies.AddRangeAsync(movies, cancellationToken);
-                    await dbContext.SaveChangesAsync(cancellationToken);
+                    await dbContext.Movies.AddRangeAsync(movies);
+                    await dbContext.SaveChangesAsync();
                     movies.Clear();
                 }
             }
@@ -91,14 +92,15 @@ internal sealed class DatabaseInitializer : IHostedService
             }
         }
 
+        // The last batch can be >batchSize
         if (movies.Count != 0)
         {
-            await dbContext.Movies.AddRangeAsync(movies, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.Movies.AddRangeAsync(movies);
+            await dbContext.SaveChangesAsync();
         }
     }
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken _)
     {
         await Task.FromResult(0);
     }

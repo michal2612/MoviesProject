@@ -2,32 +2,42 @@
 using MoviesProject.Application.DTO;
 using MoviesProject.Infrastructure.Entities;
 
-namespace MoviesProject.Application.Services.Impl
+namespace MoviesProject.Application.Services.Impl;
+
+public sealed class MovieService : IMovieService
 {
-    public sealed class MovieService : IMovieService
+    private readonly MovieDbContext _movieDbContext;
+
+    public MovieService(MovieDbContext movieDbContext)
     {
-        private readonly MovieDbContext _movieDbContext;
+        _movieDbContext = movieDbContext;
+    }
 
-        public MovieService(MovieDbContext movieDbContext)
+    public async Task<IEnumerable<MovieDto>> FindMovieByTitle(string movieTitle, string genre, int limit, int pageOffset)
+    {
+        if (limit <= 0)
+            throw new ArgumentException($"{nameof(limit)} must be greater than 0.");
+
+        if (pageOffset <= 0)
+            throw new ArgumentException($"{nameof(pageOffset)} must be greater than 0.");
+
+        var query = _movieDbContext.Movies.AsQueryable();
+
+        query = query
+            .Where(m => m.Title.Contains(movieTitle))
+            .Include(m => m.Genres);
+
+        if (!string.IsNullOrWhiteSpace(genre))
         {
-            _movieDbContext = movieDbContext;
+            query = query.Where(m => m.Genres.Any(g => g.Name == genre));
         }
 
-        public async Task<IEnumerable<MovieDto>> FindMovieByTitle(string movieTitle, int limit, int pageOffset)
-        {
-            var query = _movieDbContext.Movies.AsQueryable();
+        var items = await query
+            .Skip((pageOffset - 1) * pageOffset)
+            .Take(limit)
+            .Select(m => m.AsDto())
+            .ToListAsync();
 
-            query = query.Where(m => m.Title.Contains(movieTitle));
-
-            query = query.Include(m => m.Genres);
-
-            var items = await query
-                .Skip((pageOffset - 1) * pageOffset)
-                .Take(limit)
-                .Select(m => m.AsDto())
-                .ToListAsync();
-
-            return items;
-        }
+        return items;
     }
 }

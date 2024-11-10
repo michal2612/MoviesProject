@@ -20,7 +20,7 @@ namespace MoviesProject.Test.Integration
             var movieService = new MovieService(_context);
 
             var msg = await Assert.ThrowsAsync<ArgumentException>
-                (async() => await movieService.FindMovieByTitle("", "", -1, 1));
+                (async() => await movieService.FindMovieByTitle("", "", 0, -1, 1));
 
             Assert.NotNull(msg);
             Assert.Equal("limit must be greater than 0.", msg.Message);
@@ -32,7 +32,7 @@ namespace MoviesProject.Test.Integration
             var movieService = new MovieService(_context);
 
             var msg = await Assert.ThrowsAsync<ArgumentException>
-                (async () => await movieService.FindMovieByTitle("", "", 10, -1));
+                (async () => await movieService.FindMovieByTitle("", "", 0, 10, -1));
 
             Assert.NotNull(msg);
             Assert.Equal("pageOffset must be greater than 0.", msg.Message);

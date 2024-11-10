@@ -17,9 +17,10 @@ public class MovieController : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MovieDto>>>
-        GetMoviesByTitle(string movieTitle, string genre = "", int limit = 10, int pageOffset = 1)
+        GetMoviesByTitle(string movieTitle, string genre = "",
+        int limit = 10, int pageOffset = 1, SortingMethod sortingMethod = 0)
     {
-        var movies = await _movieService.FindMovieByTitle(movieTitle, genre, limit, pageOffset);
+        var movies = await _movieService.FindMovieByTitle(movieTitle, genre, sortingMethod, limit, pageOffset);
 
         if (movies == null || movies.Count() == 0)
         {

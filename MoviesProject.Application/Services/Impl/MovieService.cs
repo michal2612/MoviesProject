@@ -13,7 +13,8 @@ public sealed class MovieService : IMovieService
         _movieDbContext = movieDbContext;
     }
 
-    public async Task<IEnumerable<MovieDto>> FindMovieByTitle(string movieTitle, string genre, int limit, int pageOffset)
+    public async Task<IEnumerable<MovieDto>> FindMovieByTitle(string movieTitle, string genre,
+        SortingMethod sortingMethod, int limit, int pageOffset)
     {
         if (limit <= 0)
             throw new ArgumentException($"{nameof(limit)} must be greater than 0.");
@@ -32,12 +33,20 @@ public sealed class MovieService : IMovieService
             query = query.Where(m => m.Genres.Any(g => g.Name == genre));
         }
 
-        var items = await query
-            .Skip((pageOffset - 1) * pageOffset)
-            .Take(limit)
-            .Select(m => m.AsDto())
-            .ToListAsync();
+        query = query.Skip((pageOffset - 1) * pageOffset).Take(limit);
 
-        return items;
+        if (sortingMethod != SortingMethod.None)
+        {
+            query = sortingMethod switch
+            {
+                SortingMethod.TitleAsceding => query.OrderBy(m => m.Title),
+                SortingMethod.TitleDescending => query.OrderByDescending(m => m.Title),
+                SortingMethod.ReleaseDateAscending => query.OrderBy(m => m.ReleaseDate),
+                SortingMethod.ReleaseDateDescending => query.OrderByDescending(m => m.ReleaseDate),
+                _ => throw new ArgumentException($"Not valid {nameof(SortingMethod)}.")
+            };
+        }
+
+        return await query.Select(m => m.AsDto()).ToListAsync();
     }
 }

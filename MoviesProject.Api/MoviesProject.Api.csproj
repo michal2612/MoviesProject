@@ -14,4 +14,8 @@
     <ProjectReference Include="..\MoviesProject.Application\MoviesProject.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	<InternalsVisibleTo Include="MoviesProject.Test" />
+  </ItemGroup>
+	
 </Project>

@@ -40,7 +40,7 @@ public class MovieControllerTest
         public readonly IList<MovieDto> _moviesToReturns = [ new() ];
 
         public async Task<IEnumerable<MovieDto>> FindMovieByTitle
-            (string movieTitle, string genre, int limit, int pageOffset)
+            (string movieTitle, string genre, SortingMethod sortingMethod, int limit, int pageOffset)
         {
             return await Task.FromResult(string.IsNullOrWhiteSpace(movieTitle) ? [] : _moviesToReturns);
         }

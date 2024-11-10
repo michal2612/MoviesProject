@@ -14,23 +14,17 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddExceptionMiddleware();
-builder.Services.AddMoviesSqlLite();
+builder.Services.AddMoviesSqlLite(builder.Configuration.GetSection("ConnectionString").Value);
 builder.Services.AddScoped<IMovieService, MovieService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseExceptionMiddleware();
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

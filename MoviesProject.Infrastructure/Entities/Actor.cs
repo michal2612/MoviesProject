@@ -1,6 +1,8 @@
-﻿namespace MoviesProject.Infrastructure.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class Genre
+namespace MoviesProject.Infrastructure.Entities;
+
+public class Actor
 {
     public int Id { get; set; }
     public required string Name { get; set; }

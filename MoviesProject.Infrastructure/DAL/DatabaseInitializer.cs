@@ -38,6 +38,7 @@ internal sealed class DatabaseInitializer : IHostedService
         var batchSize = 500;
         var movies = new List<Movie>();
         var existingGenres = await dbContext.Genres.ToDictionaryAsync(g => g.Name.ToLower());
+        var actors = GetActors();
 
         while (csv.Read())
         {
@@ -68,7 +69,7 @@ internal sealed class DatabaseInitializer : IHostedService
                 // Add movie
                 movies.Add(new()
                 {
-                    ReleaseDate = csvRecord.Release_Date,
+                    ReleaseDate = csvRecord.Release_Date.ToUniversalTime(),
                     Title = csvRecord.Title,
                     Overview = csvRecord.Overview,
                     Popularity = csvRecord.Popularity,
@@ -76,6 +77,8 @@ internal sealed class DatabaseInitializer : IHostedService
                     VoteAverage = csvRecord.Vote_Average,
                     OriginalLanguage = csvRecord.Original_Language,
                     Genres = genres,
+                    // basic non over engineered way to select different actors
+                    Actors = actors.Skip(movies.Count % 2 == 0 ? 3 : 0).Take(3).ToList(),
                     PosterUrl = csvRecord.Poster_Url
                 });
 
@@ -103,5 +106,14 @@ internal sealed class DatabaseInitializer : IHostedService
     public async Task StopAsync(CancellationToken _)
     {
         await Task.FromResult(0);
+    }
+
+    private ICollection<Actor> GetActors()
+    {
+        var actors = new string[]
+        { "Tom Hanks", "Tom Hardy", "Marion Cotillard",
+            "Robin Wright", "Matt Damon", "Michael Caine" };
+
+        return actors.Select(a => new Actor() { Name = a}).ToList();
     }
 }

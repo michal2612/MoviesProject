@@ -15,6 +15,6 @@ public interface IMovieService
     /// <param name="limit"></param>
     /// <param name="pageOffset"></param>
     /// <returns></returns>
-    public Task<IEnumerable<MovieDto>> FindMovieByTitle(string movieTitle, string genre,
+    public Task<IEnumerable<MovieDto>> FindMovie(string movieTitle, string genre, string actor,
         SortingMethod sortingMethod, int limit, int pageOffset);
 }

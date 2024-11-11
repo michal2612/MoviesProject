@@ -4,6 +4,14 @@ namespace MoviesProject.Application.DTO;
 
 internal static class Extensions
 {
+    public static ActorDto AsDto(this Actor actor)
+    {
+        return new()
+        {
+            Name = actor.Name
+        };
+    }
+
     public static GenreDto AsDto(this Genre genre)
     {
         return new()
@@ -23,6 +31,7 @@ internal static class Extensions
             ReleaseDate = movie.ReleaseDate,
             VoteAverage = movie.VoteAverage,
             Genres = movie.Genres.Select(g => g.AsDto()).ToList(),
+            Actors = movie.Actors.Select(a => a.AsDto()).ToList(),
             PosterUrl = movie.PosterUrl,
             VoteCount = movie.VoteCount,
         };

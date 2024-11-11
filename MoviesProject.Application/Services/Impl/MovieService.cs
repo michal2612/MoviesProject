@@ -13,7 +13,7 @@ public sealed class MovieService : IMovieService
         _movieDbContext = movieDbContext;
     }
 
-    public async Task<IEnumerable<MovieDto>> FindMovieByTitle(string movieTitle, string genre,
+    public async Task<IEnumerable<MovieDto>> FindMovie(string movieTitle, string genre, string actor,
         SortingMethod sortingMethod, int limit, int pageOffset)
     {
         if (limit <= 0)
@@ -26,11 +26,19 @@ public sealed class MovieService : IMovieService
 
         query = query
             .Where(m => m.Title.Contains(movieTitle))
-            .Include(m => m.Genres);
+            .Include(m => m.Genres)
+            .Include(m => m.Actors);
+
+        if (query.Count() == 0) return [];
 
         if (!string.IsNullOrWhiteSpace(genre))
         {
             query = query.Where(m => m.Genres.Any(g => g.Name == genre));
+        }
+
+        if (!string.IsNullOrWhiteSpace(actor))
+        {
+            query = query.Where(m => m.Actors.Any(g => g.Name == actor));
         }
 
         query = query.Skip((pageOffset - 1) * limit).Take(limit);

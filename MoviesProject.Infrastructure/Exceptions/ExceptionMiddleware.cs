@@ -11,6 +11,13 @@ namespace MoviesProject.Infrastructure.Exceptions
 			{
                 await next(context);
 			}
+            catch (OperationCanceledException)
+            {
+                var statusCode = HttpStatusCode.RequestTimeout;
+                context.Response.StatusCode = (int)statusCode;
+                await context.Response.WriteAsync
+                    (new Error(statusCode, typeof(OperationCanceledException).Name, "The request timed out.").ToString());
+            }
 			catch (Exception e)
 			{
                 Error error = e switch

@@ -1,10 +1,21 @@
 ﻿namespace MoviesProject.Application.Services;
 
-public enum SortingMethod
+public record SortingOptions(SortProperty SortProperty, SortOrder SortOrder)
 {
-    None = 0,
-    TitleAsceding = 1,
-    TitleDescending = 2,
-    ReleaseDateAscending = 3,
-    ReleaseDateDescending = 4,
+    public override string ToString()
+        => $"SortProperty: {SortProperty}. SortOrder: {SortOrder}.";
+}
+
+public enum SortProperty
+{
+    None,
+    Title,
+    ReleaseDate
+}
+
+public enum SortOrder
+{
+    None,
+    Ascending,
+    Descending
 }

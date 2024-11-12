@@ -41,7 +41,9 @@ public class MovieControllerTest
 
         public async Task<IEnumerable<MovieDto>> FindMovie
             (string movieTitle, string genre, string actor,
-            SortingMethod sortingMethod, int limit, int pageOffset)
+            int limit, int pageOffset,
+            SortingOptions? sortingOptions = null,
+            CancellationToken? cancellationToken = null)
         {
             return await Task.FromResult(string.IsNullOrWhiteSpace(movieTitle) ? [] : _moviesToReturns);
         }

@@ -11,4 +11,18 @@ public class MovieDbContext : DbContext
     public MovieDbContext(DbContextOptions<MovieDbContext> options) : base(options)
     {
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Movie>()
+            .HasKey(m => m.Id);
+
+        modelBuilder.Entity<Genre>()
+            .HasKey(g => g.Id);
+
+        modelBuilder.Entity<Actor>()
+            .HasKey(a => a.Id);
+    }
 }

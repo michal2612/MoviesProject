@@ -18,13 +18,14 @@ namespace MoviesProject.Test.Integration
         }
 
         [Theory]
-        [InlineData(SortingMethod.TitleAsceding, "My Testing Movie", "My Testing Movie Sequel")]
-        [InlineData(SortingMethod.TitleDescending, "My Testing Movie Sequel", "My Testing Movie")]
-        [InlineData(SortingMethod.ReleaseDateAscending, "My Testing Movie Sequel", "My Testing Movie")]
-        [InlineData(SortingMethod.ReleaseDateDescending, "My Testing Movie", "My Testing Movie Sequel")]
-        public async Task MoviesAreSorted(SortingMethod method, string movieTitle1, string movieTitle2)
+        [InlineData(SortProperty.Title, SortOrder.Ascending, "My Testing Movie", "My Testing Movie Sequel")]
+        [InlineData(SortProperty.Title, SortOrder.Descending, "My Testing Movie Sequel", "My Testing Movie")]
+        [InlineData(SortProperty.ReleaseDate, SortOrder.Ascending, "My Testing Movie Sequel", "My Testing Movie")]
+        [InlineData(SortProperty.ReleaseDate, SortOrder.Descending, "My Testing Movie", "My Testing Movie Sequel")]
+        public async Task MoviesAreSorted(SortProperty sortProperty, SortOrder sortMethod, string movieTitle1, string movieTitle2)
         {
-            var movies = await _movieService.FindMovie("My Testing Movie", string.Empty, string.Empty, method, 2, 1);
+            var options = new SortingOptions(sortProperty, sortMethod);
+            var movies = await _movieService.FindMovie("My Testing Movie", string.Empty, string.Empty, 2, 1, options);
 
             Assert.NotNull(movies);
             Assert.Equal(movies.ElementAt(0).Title, movieTitle1);
@@ -35,7 +36,7 @@ namespace MoviesProject.Test.Integration
         public async Task LimitBelow0ThrowsException()
         {
             var msg = await Assert.ThrowsAsync<ArgumentException>
-                (async() => await _movieService.FindMovie("", "", "", 0, -1, 1));
+                (async() => await _movieService.FindMovie("", "", "", -1, 1));
 
             Assert.NotNull(msg);
             Assert.Equal("limit must be greater than 0.", msg.Message);
@@ -45,7 +46,7 @@ namespace MoviesProject.Test.Integration
         public async Task PageOffsetBelow0ThrowsException()
         {
             var msg = await Assert.ThrowsAsync<ArgumentException>
-                (async () => await _movieService.FindMovie("", "", "", 0, 10, -1));
+                (async () => await _movieService.FindMovie("", "", "", 10, -1));
 
             Assert.NotNull(msg);
             Assert.Equal("pageOffset must be greater than 0.", msg.Message);
@@ -55,10 +56,11 @@ namespace MoviesProject.Test.Integration
         public async Task InvalidSortingMethod()
         {
             var msg = await Assert.ThrowsAsync<ArgumentException>
-                (async () => await _movieService.FindMovie("", "", "", (SortingMethod)99, 10, 2));
+                (async () => await _movieService.FindMovie("", "", "", 10, 2,
+                new SortingOptions((SortProperty)99, SortOrder.Ascending)));
 
             Assert.NotNull(msg);
-            Assert.Equal("Not valid SortingMethod.", msg.Message);
+            Assert.Equal("Not valid: SortProperty: 99. SortOrder: Ascending.", msg.Message);
         }
 
         public void Dispose()

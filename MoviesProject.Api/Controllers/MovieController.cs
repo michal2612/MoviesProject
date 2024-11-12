@@ -17,12 +17,21 @@ public class MovieController : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MovieDto>>>
-        GetMoviesByTitle(string movieTitle, string genre = "", string actor = "",
-        int limit = 10, int pageOffset = 1, SortingMethod sortingMethod = 0)
+        GetMoviesByTitle(string movieTitle,
+        string genre = "",
+        string actor = "",
+        int limit = 10,
+        int pageOffset = 1,
+        SortProperty sortProperty = SortProperty.None,
+        SortOrder sortOrder = SortOrder.None)
     {
-        var movies = await _movieService.FindMovie(movieTitle, genre, actor, sortingMethod, limit, pageOffset);
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        var token = cancellationTokenSource.Token;
 
-        if (movies == null || movies.Count() == 0)
+        var movies = await _movieService
+            .FindMovie(movieTitle, genre, actor, limit, pageOffset, new(sortProperty, sortOrder), token);
+
+        if (movies == null || !movies.Any())
         {
             return NotFound();
         }

@@ -14,7 +14,7 @@ public sealed class MovieService : IMovieService
     }
 
     public async Task<IEnumerable<MovieDto>> FindMovie(string movieTitle, string genre, string actor,
-        SortingMethod sortingMethod, int limit, int pageOffset)
+        int limit, int pageOffset, SortingOptions? sortingOptions, CancellationToken? token = null)
     {
         if (limit <= 0)
             throw new ArgumentException($"{nameof(limit)} must be greater than 0.");
@@ -29,7 +29,7 @@ public sealed class MovieService : IMovieService
             .Include(m => m.Genres)
             .Include(m => m.Actors);
 
-        if (query.Count() == 0) return [];
+        if (!query.Any()) return [];
 
         if (!string.IsNullOrWhiteSpace(genre))
         {
@@ -43,15 +43,18 @@ public sealed class MovieService : IMovieService
 
         query = query.Skip((pageOffset - 1) * limit).Take(limit);
 
-        if (sortingMethod != SortingMethod.None)
+        if (sortingOptions != null && sortingOptions.SortOrder != SortOrder.None)
         {
-            query = sortingMethod switch
+            if (sortingOptions.SortOrder == SortOrder.None)
+                throw new ArgumentException($"{nameof(SortOrder)} is not defined.");
+
+            query = (sortingOptions.SortProperty, sortingOptions.SortOrder) switch
             {
-                SortingMethod.TitleAsceding => query.OrderBy(m => m.Title),
-                SortingMethod.TitleDescending => query.OrderByDescending(m => m.Title),
-                SortingMethod.ReleaseDateAscending => query.OrderBy(m => m.ReleaseDate),
-                SortingMethod.ReleaseDateDescending => query.OrderByDescending(m => m.ReleaseDate),
-                _ => throw new ArgumentException($"Not valid {nameof(SortingMethod)}.")
+                (SortProperty.Title, SortOrder.Ascending) => query.OrderBy(m => m.Title),
+                (SortProperty.Title, SortOrder.Descending) => query.OrderByDescending(m => m.Title),
+                (SortProperty.ReleaseDate, SortOrder.Ascending) => query.OrderBy(m => m.ReleaseDate),
+                (SortProperty.ReleaseDate, SortOrder.Descending) => query.OrderByDescending(m => m.ReleaseDate),
+                _ => throw new ArgumentException($"Not valid: {sortingOptions}")
             };
         }
 
